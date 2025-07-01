@@ -1,26 +1,29 @@
 const express = require("express");
 const cors = require("cors");
-const bodyParser = require("body-parser");
 const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const port = 3001;
+const PORT = process.env.PORT || 3001;
+const DB_PATH = path.join(__dirname, "db.json");
 
-app.use(cors());
-app.use(bodyParser.json());
+// CORS 設定
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+};
 
-const dbPath = path.join(__dirname, "db.json");
+app.use(cors(corsOptions));
+app.use(express.json());
 
 // Helper function to read the database
 const readDb = () => {
-  const dbJson = fs.readFileSync(dbPath, "utf8");
+  const dbJson = fs.readFileSync(DB_PATH, "utf8");
   return JSON.parse(dbJson);
 };
 
 // Helper function to write to the database
 const writeDb = (db) => {
-  fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
+  fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
 };
 
 // Get all blog data
@@ -148,6 +151,6 @@ app.delete("/api/news/:id", (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Backend server listening at http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Backend server listening at http://localhost:${PORT}`);
 });
