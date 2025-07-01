@@ -8,8 +8,18 @@ const PORT = process.env.PORT || 3001;
 const DB_PATH = path.join(__dirname, "db.json");
 
 // CORS 設定
+const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:3000").split(',');
+
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
 };
 
 app.use(cors(corsOptions));
