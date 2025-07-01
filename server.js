@@ -7,20 +7,34 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const DB_PATH = path.join(__dirname, "db.json");
 
-// CORS 設定
-const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:3000").split(',');
+// --- CORS 設定修改開始 ---
+
+// 建立一個允許來源的白名單
+const allowedOrigins = [
+  "http://localhost:3000", // 永遠允許本地開發環境
+];
+
+// 如果在 Render 上設定了 CORS_ORIGIN 環境變數，也將其加入白名單
+if (process.env.CORS_ORIGIN) {
+  // 支援單一或多個以逗號分隔的網址
+  const productionOrigins = process.env.CORS_ORIGIN.split(",").map((origin) =>
+    origin.trim()
+  );
+  allowedOrigins.push(...productionOrigins);
+}
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    // 允許沒有 origin 的請求 (例如 Postman 或伺服器間請求)
+    // 或來源在白名單中的請求
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
     }
   },
 };
+// --- CORS 設定修改結束 ---
 
 app.use(cors(corsOptions));
 app.use(express.json());
