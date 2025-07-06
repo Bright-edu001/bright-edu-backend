@@ -12,6 +12,7 @@ const DB_PATH = path.join(__dirname, "db.json");
 // 建立一個允許來源的白名單
 const allowedOrigins = [
   "http://localhost:3000", // 永遠允許本地開發環境
+  "http://localhost:3001", // 永遠允許本地開發環境
 ];
 
 // 如果在 Render 上設定了 CORS_ORIGIN 環境變數，也將其加入白名單
